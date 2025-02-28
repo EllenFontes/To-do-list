@@ -3,10 +3,8 @@ package com.todoapp.todolist.controller;
 import com.todoapp.todolist.entity.Task;
 import com.todoapp.todolist.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tasks")
@@ -16,9 +14,15 @@ public class TaskController {
     TaskService taskService;
 
     @PostMapping
-    public Task create(@RequestBody Task task) {
+    public Task createTask(@RequestBody Task task) {
         System.out.println("Recebendo a Task: " + task);
         return taskService.create(task);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task){
+        Task updatedTask = taskService.update(id, task);
+        return ResponseEntity.ok(updatedTask);
     }
 
 }
