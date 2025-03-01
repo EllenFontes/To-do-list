@@ -2,6 +2,7 @@ package com.todoapp.todolist.controller;
 
 import com.todoapp.todolist.entity.Task;
 import com.todoapp.todolist.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ public class TaskController {
     TaskService taskService;
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
+    public Task createTask(@Valid @RequestBody Task task) {
         System.out.println("Recebendo a Task: " + task);
         return taskService.create(task);
     }
