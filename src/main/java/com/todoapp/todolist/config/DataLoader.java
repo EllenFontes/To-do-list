@@ -15,7 +15,7 @@ public class DataLoader {
     @Bean
     CommandLineRunner loadData() {
         return args -> {
-            if (taskRepository.count() == 0) { // Evita duplicar dados
+            if (taskRepository.count() == 0) {
                 Task task1 = new Task();
                 task1.setTitle("Estudar Spring Boot");
                 task1.setDescription("Fazer um projeto To-Do List");

@@ -14,14 +14,15 @@ public class TaskController {
     @Autowired
     TaskService taskService;
 
+
     @PostMapping
-    public Task createTask(@Valid @RequestBody Task task) {
-        System.out.println("Recebendo a Task: " + task);
-        return taskService.create(task);
+    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
+        Task newTask = taskService.create(task);
+        return ResponseEntity.ok(newTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task){
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @Valid @RequestBody Task task){
         Task updatedTask = taskService.update(id, task);
         return ResponseEntity.ok(updatedTask);
     }
