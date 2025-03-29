@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    @Autowired
-    TaskService taskService;
+    private final TaskService taskService;
 
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
     @PostMapping
     public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
