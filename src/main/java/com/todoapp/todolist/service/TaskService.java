@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,7 +24,7 @@ public class TaskService {
     }
 
 
-    //Altera uma task existente
+    //Atualiza uma task existente
 
     public Task update(Long id, Task newTask) {
         Task task = taskRepository.findById(id)
@@ -35,6 +36,12 @@ public class TaskService {
 
         return taskRepository.save(task);
 
+    }
+
+    //Mostrar todas as tasks
+
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
     }
 
 
