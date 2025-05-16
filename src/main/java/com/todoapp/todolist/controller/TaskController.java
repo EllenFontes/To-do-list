@@ -17,11 +17,15 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    //Cria uma task
+
     @PostMapping
     public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
         Task newTask = taskService.create(task);
         return ResponseEntity.ok(newTask);
     }
+
+    //Altera uma task existente
 
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @Valid @RequestBody Task task){

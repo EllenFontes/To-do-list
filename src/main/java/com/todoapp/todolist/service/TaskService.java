@@ -16,10 +16,14 @@ public class TaskService {
     @Autowired
     TaskRepository taskRepository;
 
+    //Cria uma task
+
     public Task create(Task task) {
         return taskRepository.save(task);
     }
 
+
+    //Altera uma task existente
 
     public Task update(Long id, Task newTask) {
         Task task = taskRepository.findById(id)
