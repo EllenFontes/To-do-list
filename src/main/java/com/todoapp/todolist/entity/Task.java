@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name= "db_tasks")
+@Table(name= "DB_TASK")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -15,11 +15,22 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "TASK_ID")
     private long id;
+
     @NotBlank(message = "Title is required")
+    @Column(name = "TASK_TITLE", nullable = false)
     private String title;
+
+    @Column(name = "TASK_DESCRIPTION")
     private String description;
+
     @NotBlank(message = "Status is required")
+    @Column(name = "TASK_STATUS", nullable = false)
     private String status;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "TASK_USER_ID")
+    private User user;
+
 }
