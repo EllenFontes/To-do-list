@@ -14,7 +14,6 @@ O projeto utiliza **Spring Boot 3.4.3** para uma arquitetura robusta e **Spring 
 - [Configuração do Ambiente](#️-configuração-do-ambiente)
 - [Modelagem do Banco de Dados](#-modelagem-do-banco-de-dados)
 - [Documentação da API (Endpoints)](#️-documentação-da-api-endpoints)
-- [Próximos Passos](#️-próximos-passos)
 
 ---
 
@@ -63,8 +62,8 @@ cd todolist-api
 
 ## 2️⃣ Geração das Chaves RSA (Obrigatório)
 
-O projeto utiliza criptografia assimétrica. As chaves devem ser geradas em  
-`src/main/resources` para que o Spring as reconheça no **classpath**.
+O projeto utiliza criptografia assimétrica. As chaves devem ser geradas através do git bash
+no diretório `src/main/resources` para que o Spring as reconheça no **classpath**.
 
 Abra o **Git Bash** nessa pasta e execute **um comando por vez**.
 
@@ -89,6 +88,7 @@ openssl rsa -in app.key.pem -pubout -out app.pub.pem
 ```
 
 ⚠️ **Atenção:**  
+
 Os arquivos `.pem` estão listados no `.gitignore` e **não devem ser enviados para o GitHub**. 🚫🔐
 
 ---
@@ -132,5 +132,7 @@ spring.datasource.password=sua_senha
 ```
 
 ## 🕹️ Documentação da API (Endpoints)
+
+Em desenvolvimento
 
 
