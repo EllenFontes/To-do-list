@@ -3,8 +3,9 @@ package com.todoapp.todolist.controller;
 import com.todoapp.todolist.entity.Task;
 import com.todoapp.todolist.service.TaskService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,28 +20,32 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    //Cria uma task
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
-        Task newTask = taskService.create(task);
+    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task, @AuthenticationPrincipal Jwt jwt) {
+
+        Long userId = Long.valueOf(jwt.getSubject());
+
+        Task newTask = taskService.create(task, userId);
         return ResponseEntity.ok(newTask);
     }
 
-    //Altera uma task existente
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @Valid @RequestBody Task task){
-        Task updatedTask = taskService.update(id, task);
+    public ResponseEntity<Task> updateTask(@PathVariable("id") Long taskId, @Valid @RequestBody Task task,
+                                           @AuthenticationPrincipal Jwt jwt){
+        Long userId = Long.valueOf(jwt.getSubject());
+
+        Task updatedTask = taskService.update(taskId, task, userId);
         return ResponseEntity.ok(updatedTask);
     }
 
 
-    //Retorna todas as tasks
-
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks(){
-        List<Task> listTasks = taskService.getAllTasks();
+    public ResponseEntity<List<Task>> getAllTasks(@AuthenticationPrincipal Jwt jwt){
+        Long userId = Long.valueOf(jwt.getSubject());
+
+        List<Task> listTasks = taskService.getAllTasks(userId);
         return ResponseEntity.ok(listTasks);
     }
 

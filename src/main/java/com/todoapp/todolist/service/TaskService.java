@@ -2,33 +2,46 @@ package com.todoapp.todolist.service;
 
 
 import com.todoapp.todolist.entity.Task;
+import com.todoapp.todolist.entity.User;
 import com.todoapp.todolist.exception.TaskNotFoundException;
 import com.todoapp.todolist.repository.TaskRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.todoapp.todolist.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TaskService {
 
-    @Autowired
     TaskRepository taskRepository;
+    UserRepository userRepository;
 
-    //Cria uma task
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
+        this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
+    }
 
-    public Task create(Task task) {
+
+    public Task create(Task task, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        task.setUser(user);
+
         return taskRepository.save(task);
     }
 
 
-    //Atualiza uma task existente
+    public Task update(Long taskId, Task newTask, Long userId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException(taskId));
 
-    public Task update(Long id, Task newTask) {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException(id));
+        if (task.getUser().getId() != userId) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to update this task");
+        }
 
         task.setTitle(newTask.getTitle());
         task.setDescription(newTask.getDescription());
@@ -38,10 +51,9 @@ public class TaskService {
 
     }
 
-    //Mostrar todas as tasks
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<Task> getAllTasks(Long userId) {
+        return taskRepository.findByUserId(userId);
     }
 
 

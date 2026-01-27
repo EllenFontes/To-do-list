@@ -1,5 +1,6 @@
 package com.todoapp.todolist.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "TASK_USER_ID")
+    @JsonIgnore
     private User user;
 
 }
