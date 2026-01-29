@@ -1,6 +1,7 @@
 package com.todoapp.todolist.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ public class User {
     private String email;
 
     @Column(name = "USER_PASSWORD", nullable = false)
+    @JsonIgnore
     private String password;
 
 

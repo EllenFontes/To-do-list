@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Calm Tasks</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="dashboard-body">
+<div class="layout-wrapper">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <i data-lucide="list-todo" class="icon-primary"></i>
+      </div>
+      <h2>Calm Tasks</h2>
+      <p class="muted-text">Your mindful to-do list</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a th:href="@{/tasks-view}" class="nav-item active">
+        <i data-lucide="list-todo"></i>
+        <span>Tasks</span>
+      </a>
+      <a th:href="@{/profile}" class="nav-item">
+        <i data-lucide="user"></i>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+    <a th:href="@{/logout}" class="nav-item logout">
+      <i data-lucide="log-out"></i>
+      <span>Sign Out</span>
+    </a>
+  </aside>
+
+  <main class="main-content">
+    <header class="content-header">
+      <h1>My Tasks</h1>
+      <p class="muted-text">Organize your day with intention</p>
+    </header>
+
+    <div class="filter-group">
+      <button class="pill active">All Tasks</button>
+      <button class="pill">In Progress</button>
+      <button class="pill">Completed</button>
+    </div>
+
+    <div class="task-container">
+      <div th:each="task : ${listTasks}" class="task-card">
+        <div class="task-content">
+          <button class="toggle-btn">
+            <i th:if="${task.status == 'COMPLETED'}" data-lucide="check-circle-2" class="icon-done"></i>
+            <i th:unless="${task.status == 'COMPLETED'}" data-lucide="circle" class="icon-todo"></i>
+          </button>
+
+          <div class="task-text">
+            <h3 th:text="${task.title}" th:classappend="${task.status == 'COMPLETED'} ? 'line-through' : ''">Task Title</h3>
+            <p th:text="${task.description}" class="muted-text">Task description goes here.</p>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(listTasks)}" class="empty-state">
+        <p class="muted-text">No tasks found</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Inicializa os ícones Lucide
+  lucide.createIcons();
+</script>
+</body>
+</html>

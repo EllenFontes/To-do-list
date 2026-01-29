@@ -3,6 +3,8 @@ package com.todoapp.todolist.controller;
 import com.todoapp.todolist.controller.dto.LoginRequestDTO;
 import com.todoapp.todolist.controller.dto.LoginResponseDTO;
 import com.todoapp.todolist.service.TokenService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +22,22 @@ public class TokenController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        LoginResponseDTO getUserToken = tokenService.login(loginRequestDTO);
-        return ResponseEntity.ok(getUserToken);
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO,
+                                                  HttpServletResponse response) {
+
+        LoginResponseDTO userToken = tokenService.login(loginRequestDTO);
+        Cookie cookie = tokenService.createCookie(userToken);
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = tokenService.destroyCookie();
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 
 

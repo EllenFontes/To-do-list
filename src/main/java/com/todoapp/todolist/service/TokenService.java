@@ -4,6 +4,7 @@ import com.todoapp.todolist.controller.dto.LoginRequestDTO;
 import com.todoapp.todolist.controller.dto.LoginResponseDTO;
 import com.todoapp.todolist.entity.User;
 import com.todoapp.todolist.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -52,6 +53,27 @@ public class TokenService {
 
     public boolean isLoginCorrect(LoginRequestDTO loginRequestDTO, Optional<User> user) {
         return passwordEncoder.matches(loginRequestDTO.password(), user.get().getPassword());
+    }
+
+    public Cookie createCookie(LoginResponseDTO loginResponseDTO) {
+
+        Cookie cookie = new Cookie("token", loginResponseDTO.accessToken());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(loginResponseDTO.expiresIn().intValue());
+
+        return cookie;
+    }
+
+    public Cookie destroyCookie() {
+
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+
+        return cookie;
     }
 
 

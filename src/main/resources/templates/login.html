@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - To-Do List</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="login-card">
+    <div class="header">
+        <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Welcome Back</h1>
+        <p style="color: var(--muted-foreground); margin-bottom: 2rem;">Sign in to continue to your tasks</p>
+    </div>
+
+    <form id="loginForm">
+        <div class="input-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="your@email.com" required>
+        </div>
+
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" class="btn-signin">Sign In</button>
+    </form>
+
+    <a href="#" class="forgot-link">Forgot password?</a>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+            // O navegador já recebeu o cookie "token" via Set-Cookie do backend
+            window.location.href = '/tasks-view';
+        } else {
+            alert("E-mail ou senha incorretos.");
+        }
+    });
+</script>
+</body>
+</html>
