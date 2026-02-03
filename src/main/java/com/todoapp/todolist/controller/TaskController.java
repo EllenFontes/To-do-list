@@ -1,5 +1,7 @@
 package com.todoapp.todolist.controller;
 
+import com.todoapp.todolist.controller.dto.CreateTaskDTO;
+import com.todoapp.todolist.controller.dto.UpdateTaskDTO;
 import com.todoapp.todolist.entity.Task;
 import com.todoapp.todolist.service.TaskService;
 import jakarta.validation.Valid;
@@ -22,21 +24,22 @@ public class TaskController {
 
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<Task> createTask(@Valid @RequestBody CreateTaskDTO createTaskDTO, @AuthenticationPrincipal Jwt jwt) {
 
         Long userId = Long.valueOf(jwt.getSubject());
 
-        Task newTask = taskService.create(task, userId);
+        Task newTask = taskService.create(createTaskDTO, userId);
         return ResponseEntity.ok(newTask);
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable("id") Long taskId, @Valid @RequestBody Task task,
+    public ResponseEntity<Task> updateTask(@PathVariable("id") Long taskId,
+                                           @Valid @RequestBody UpdateTaskDTO updateTaskDTO,
                                            @AuthenticationPrincipal Jwt jwt){
         Long userId = Long.valueOf(jwt.getSubject());
 
-        Task updatedTask = taskService.update(taskId, task, userId);
+        Task updatedTask = taskService.update(taskId, updateTaskDTO, userId);
         return ResponseEntity.ok(updatedTask);
     }
 

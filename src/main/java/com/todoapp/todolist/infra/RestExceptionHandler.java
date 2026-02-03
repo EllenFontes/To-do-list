@@ -1,6 +1,9 @@
 package com.todoapp.todolist.infra;
 
+import com.todoapp.todolist.exception.AccessDeniedException;
 import com.todoapp.todolist.exception.TaskNotFoundException;
+import com.todoapp.todolist.exception.UserAlreadyExistsException;
+import com.todoapp.todolist.exception.UserNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -61,5 +64,46 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    private ResponseEntity<ApiError> userNotFoundHandler(UserNotFoundException exception){
+        ApiError apiError = ApiError
+                .builder()
+                .timestamp(LocalDateTime.now())
+                .code(HttpStatus.NOT_FOUND.value())
+                .status(HttpStatus.NOT_FOUND.name())
+                .message(exception.getMessage())
+                .error("User not found")
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    private ResponseEntity<ApiError> userAlreadyExistsHandler(UserAlreadyExistsException exception){
+        ApiError apiError = ApiError
+                .builder()
+                .timestamp(LocalDateTime.now())
+                .code(HttpStatus.CONFLICT.value())
+                .status(HttpStatus.CONFLICT.name())
+                .message(exception.getMessage())
+                .error("User already exists")
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    private ResponseEntity<ApiError> accessDeniedHandler(AccessDeniedException exception) {
+        ApiError apiError = ApiError.builder()
+                .timestamp(LocalDateTime.now())
+                .code(HttpStatus.FORBIDDEN.value())
+                .status(HttpStatus.FORBIDDEN.name())
+                .message(exception.getMessage())
+                .error("Access denied")
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
 }
