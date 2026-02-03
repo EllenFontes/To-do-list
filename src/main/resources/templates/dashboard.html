@@ -6,19 +6,29 @@
   <title>Dashboard - Calm Tasks</title>
   <link rel="stylesheet" th:href="@{/css/style.css}">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .modal { display: none; position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.2); align-items: center; justify-content: center; padding: 1rem; }
+    .modal.active { display: flex; }
+    .hidden { display: none; }
+    .ml-13 { margin-left: 3.25rem; }
+    .btn-delete:hover { color: #ef4444; }
+    .task-card { display: flex; align-items: flex-start; gap: 1rem; }
+    .flex-1 { flex: 1; }
+  </style>
 </head>
 <body class="dashboard-body">
 <div class="layout-wrapper">
-  <aside class="sidebar">
+
+  <aside id="sidebar" class="sidebar">
     <div class="sidebar-header">
       <div class="logo-container">
         <i data-lucide="list-todo" class="icon-primary"></i>
       </div>
       <h2>Calm Tasks</h2>
-      <p class="muted-text">Your mindful to-do list</p>
+      <p class="muted-text ml-13">Your mindful to-do list</p>
     </div>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" style="flex: 1">
       <a th:href="@{/tasks-view}" class="nav-item active">
         <i data-lucide="list-todo"></i>
         <span>Tasks</span>
@@ -29,49 +39,141 @@
       </a>
     </nav>
 
-    <a th:href="@{/logout}" class="nav-item logout">
+    <form th:action="@{/auth/logout}" method="post" id="logoutForm" style="display: none;"></form>
+    <a href="javascript:void(0)" onclick="document.getElementById('logoutForm').submit();" class="nav-item logout">
       <i data-lucide="log-out"></i>
       <span>Sign Out</span>
     </a>
   </aside>
 
   <main class="main-content">
-    <header class="content-header">
-      <h1>My Tasks</h1>
-      <p class="muted-text">Organize your day with intention</p>
-    </header>
+    <div class="max-w-5xl mx-auto">
+      <header class="content-header" style="margin-bottom: 2rem;">
+        <h1>My Tasks</h1>
+        <p class="muted-text">Organize your day with intention</p>
+      </header>
 
-    <div class="filter-group">
-      <button class="pill active">All Tasks</button>
-      <button class="pill">In Progress</button>
-      <button class="pill">Completed</button>
-    </div>
+      <div class="filter-group" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
 
-    <div class="task-container">
-      <div th:each="task : ${listTasks}" class="task-card">
-        <div class="task-content">
-          <button class="toggle-btn">
+        <div class="pills-container" style="display: flex; gap: 0.5rem;">
+          <button class="pill active" onclick="filterTasks('all', this)">Todas</button>
+          <button class="pill" onclick="filterTasks('TODO', this)">A Fazer</button>
+          <button class="pill" onclick="filterTasks('IN_PROGRESS', this)">Em Andamento</button>
+          <button class="pill" onclick="filterTasks('COMPLETED', this)">Concluídas</button>
+        </div>
+
+        <button class="btn-signin" style="width: auto; padding: 0 1.5rem; margin-top: 0;" onclick="toggleModal(true)">
+          <i data-lucide="plus" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;"></i>
+          Add New Task
+        </button>
+      </div> <div id="taskContainer" class="task-container">
+        <div th:each="task : ${listTasks}" class="task-card" th:data-status="${task.status}">
+          <button class="toggle-btn" th:onclick="'toggleTaskStatus(' + ${task.id} + ')'">
             <i th:if="${task.status == 'COMPLETED'}" data-lucide="check-circle-2" class="icon-done"></i>
             <i th:unless="${task.status == 'COMPLETED'}" data-lucide="circle" class="icon-todo"></i>
           </button>
 
-          <div class="task-text">
+          <div class="task-text flex-1">
             <h3 th:text="${task.title}" th:classappend="${task.status == 'COMPLETED'} ? 'line-through' : ''">Task Title</h3>
-            <p th:text="${task.description}" class="muted-text">Task description goes here.</p>
+            <p th:text="${task.description}" class="muted-text">Description</p>
           </div>
-        </div>
-      </div>
 
-      <div th:if="${#lists.isEmpty(listTasks)}" class="empty-state">
-        <p class="muted-text">No tasks found</p>
+          <button class="btn-delete" style="background:none; border:none; cursor:pointer;" th:onclick="'deleteTask(' + ${task.id} + ')'">
+            <i data-lucide="trash-2" class="muted-text"></i>
+          </button>
+        </div>
+
+        <div th:if="${#lists.isEmpty(listTasks)}" id="emptyState" class="text-center py-16">
+          <p class="muted-text">No tasks found</p>
+        </div>
       </div>
     </div>
   </main>
 </div>
 
+<div id="createModal" class="modal">
+  <div class="login-card" style="max-width: 500px; position: relative;">
+    <button onclick="toggleModal(false)" style="position: absolute; right: 1.5rem; top: 1.5rem; background: none; border: none; cursor: pointer;">
+      <i data-lucide="x"></i>
+    </button>
+
+    <h2 style="text-align: left; margin-bottom: 1.5rem;">Create New Task</h2>
+
+    <div class="input-group">
+      <label for="taskTitle">Task Title</label>
+      <input type="text" id="taskTitle" placeholder="Enter task title">
+    </div>
+
+    <div class="input-group">
+      <label for="taskDesc">Description</label>
+      <input type="text" id="taskDesc" placeholder="Enter task description">
+    </div>
+
+    <div class="input-group">
+      <label for="taskStatus">Status</label>
+      <select id="taskStatus" class="h-12 rounded-2xl bg-input-background border-border" style="width: 100%; padding: 0 1rem; border: 1px solid var(--border);">
+        <option value="TODO">A Fazer</option>
+        <option value="IN_PROGRESS">Em Andamento</option>
+        <option value="COMPLETED">Concluído</option>
+      </select>
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+      <button class="pill" style="flex: 1; height: 3.5rem;" onclick="toggleModal(false)">Cancel</button>
+      <button class="btn-signin" style="flex: 1; margin-top: 0;" onclick="handleCreateTask()">Create Task</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // Inicializa os ícones Lucide
   lucide.createIcons();
+
+  function toggleModal(show) {
+    document.getElementById('createModal').classList.toggle('active', show);
+  }
+
+  async function handleCreateTask() {
+    const title = document.getElementById('taskTitle').value;
+    const description = document.getElementById('taskDesc').value;
+    const status = document.getElementById('taskStatus').value;
+
+    if (!title) return alert("Title is required");
+
+    const response = await fetch('/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description, status })
+    });
+
+    if (response.ok) {
+      window.location.reload();
+    }
+  }
+
+  function filterTasks(status, btn) {
+
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cards = document.querySelectorAll('.task-card');
+    cards.forEach(card => {
+      if (status === 'all' || card.getAttribute('data-status') === status) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  }
+
+  async function deleteTask(id) {
+    if (!confirm("Delete this task?")) return;
+    const response = await fetch(`/tasks/${id}`, { method: 'DELETE' });
+    if (response.ok) window.location.reload();
+  }
+
+  async function toggleTaskStatus(id) {
+    console.log("Toggle status for task:", id);
+  }
 </script>
 </body>
 </html>

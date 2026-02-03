@@ -56,6 +56,14 @@ public class TaskService {
         return taskRepository.findByUserId(userId);
     }
 
+    public long getCompletedTasksCount(Long userId){
+        List<Task> tasks = getAllTasks(userId);
+
+        return tasks.stream()
+                .filter(t -> "COMPLETED".equals(t.getStatus()))
+                .count();
+    }
+
 
 
 }
