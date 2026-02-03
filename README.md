@@ -17,6 +17,18 @@ O projeto utiliza **Spring Boot 3.4.3** para uma arquitetura robusta e **Spring 
 
 ---
 
+# 🕹️ Documentação da API (Endpoints)
+
+A seguir estão detalhados os endpoints disponíveis na **To-Do List API**.
+
+---
+
+## 🔗 Navegação Rápida
+- [Endpoints de Autenticação](#-endpoints-de-autenticação)
+- [Endpoints de Tarefas](#-endpoints-de-tarefas)
+
+---
+
 ## ✨ Funcionalidades
 
 A API implementa um ciclo completo de gerenciamento de tarefas aliado a um sistema de segurança rigoroso.
@@ -133,6 +145,139 @@ spring.datasource.password=sua_senha
 
 ## 🕹️ Documentação da API (Endpoints)
 
-Em desenvolvimento
+### 🔐 Endpoints de Autenticação
+
+Rotas públicas para gestão de acesso e criação de contas.
+
+---
+
+#### 1️⃣ Registrar um Novo Usuário
+
+Cria uma nova conta de usuário no sistema para que ele possa gerenciar suas próprias tarefas.
+
+**Endpoint:** `/users`  
+**Método:** `POST`
+
+#### 📥 Requisição
+
+| Atributo | Descrição |
+|--------|-----------|
+| URL | `/users` |
+| Método | `POST` |
+| Cabeçalhos | `Content-Type: application/json` |
+
+**Corpo da Requisição (JSON):**
+```json
+{
+  "name": "Seu Nome",
+  "email": "usuario@email.com",
+  "password": "suaSenhaSegura"
+}
+```
+
+#### 📤 Respostas
+- **201 Created** – Usuário registrado com sucesso.
+- **409 Conflict** – E-mail já está em uso.
+
+---
+
+### 2️⃣ Autenticar um Usuário (Login)
+
+Autentica o usuário e retorna um **Token JWT assinado com RSA** para acesso às rotas protegidas.
+
+**Endpoint:** `/login`  
+**Método:** `POST`
+
+#### 📥 Requisição
+
+**Corpo da Requisição (JSON):**
+```json
+{
+  "email": "usuario@email.com",
+  "password": "suaSenhaSegura"
+}
+```
+
+#### 📤 Respostas
+- **200 OK** – Autenticação bem-sucedida. Retorna o token JWT.
+- **401 Unauthorized** – Credenciais inválidas.
+
+---
+
+## Endpoints de Tarefas
+
+Todas as rotas abaixo são protegidas e exigem o cabeçalho:
+`Authorization: Bearer <seu_token_jwt>`
+
+### 1. Criar uma Nova Tarefa
+Cria uma tarefa vinculada automaticamente ao usuário autenticado.
+
+- **Endpoint:** `/tasks`
+- **Método:** `POST`
+
+#### 📥 Requisição
+**Corpo da Requisição (CreateTaskDTO):**
+```json
+{
+  "taskTitle": "Estudar Spring Boot",
+  "taskDescription": "Finalizar o módulo de segurança",
+  "taskStatus": "PENDING"
+}
+```
+#### 📤 Respostas
+- **`200 OK`** – Tarefa criada com sucesso.
+- **`400 Bad Request`** – Dados inválidos (ex: título em branco).
+
+---
+
+### 2. Listar Todas as Tarefas
+Retorna todas as tarefas pertencentes ao usuário logado.
+
+- **Endpoint:** `/tasks`
+- **Método:** `GET`
+
+#### 📤 Respostas
+- **`200 OK`** – Retorna a lista de tarefas.
+- **`200 OK []`** – Retorna lista vazia caso não existam tarefas.
+
+---
+
+### 3. Atualizar uma Tarefa
+Permite alterar o título, descrição ou status de uma tarefa existente.
+
+- **Endpoint:** `/tasks/{id}`
+- **Método:** `PUT`
+
+#### 📥 Requisição
+**Parâmetros de Path:**
+| Parâmetro | Descrição |
+| :--- | :--- |
+| `id` | ID numérico da tarefa a ser atualizada |
+
+**Corpo da Requisição (UpdateTaskDTO):**
+```json
+{
+  "title": "Estudar Spring Boot e DTOs",
+  "description": "Revisar a implementação de records",
+  "status": "COMPLETED"
+}
+```
+#### 📤 Respostas
+- **`200 OK`** – Tarefa atualizada com sucesso.
+- **`403 Forbidden`** – A tarefa não pertence ao usuário autenticado.
+- **`404 Not Found`** – Tarefa não encontrada.
+
+---
+
+## ⚠️ Tratamento de Erros
+A API utiliza um `RestExceptionHandler` para padronizar as respostas de erro por meio da classe `ApiError`.
+
+**Possíveis erros:**
+* **400 Bad Request** – Erros de validação nos campos do DTO.
+* **403 Forbidden** – Tentativa de acesso a um recurso que não pertence ao usuário.
+* **404 Not Found** – Recurso (Tarefa ou Usuário) não encontrado.
+* **409 Conflict** – Violação de restrição (ex: e-mail duplicado).
+
+
 
 
