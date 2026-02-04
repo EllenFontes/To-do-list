@@ -5,6 +5,8 @@ import com.todoapp.todolist.controller.dto.LoginResponseDTO;
 import com.todoapp.todolist.service.TokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +39,10 @@ public class TokenController {
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = tokenService.destroyCookie();
         response.addCookie(cookie);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, "/login")
+                .build();
     }
 
 

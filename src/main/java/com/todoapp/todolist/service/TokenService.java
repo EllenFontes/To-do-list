@@ -37,7 +37,7 @@ public class TokenService {
         }
 
         var currentTime = Instant.now();
-        var expiresIn = 300L;
+        var expiresIn = 3600L;
 
         var claims = JwtClaimsSet.builder()
                 .issuer("toDoListBackend")
