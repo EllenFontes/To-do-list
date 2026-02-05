@@ -48,4 +48,9 @@ public class LoginViewController {
         return "profile";
     }
 
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+
 }
