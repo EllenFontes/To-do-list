@@ -105,8 +105,8 @@
     </div>
 
     <div class="input-group">
-      <label for="taskDesc">Description</label>
-      <input type="text" id="taskDesc" placeholder="Enter task description">
+      <label for="taskDescription">Description</label>
+      <input type="text" id="taskDescription" placeholder="Enter task description">
     </div>
 
     <div class="input-group">
@@ -134,7 +134,7 @@
 
   async function handleCreateTask() {
     const title = document.getElementById('taskTitle').value;
-    const description = document.getElementById('taskDesc').value;
+    const description = document.getElementById('taskDescription').value;
     const status = document.getElementById('taskStatus').value;
 
     if (!title) return alert("Title is required");
@@ -142,11 +142,19 @@
     const response = await fetch('/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, status })
+      body: JSON.stringify({
+        taskTitle: title,
+        taskDescription: description,
+        taskStatus: status
+      })
     });
 
     if (response.ok) {
       window.location.reload();
+    } else {
+      const errorData = await response.json();
+      console.error("Erro na validação:", errorData);
+      alert("Erro ao criar tarefa: " + (errorData.error || "Verifique os campos"));
     }
   }
 

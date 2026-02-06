@@ -37,7 +37,7 @@
             <p class="text-zinc-500">Join us and start organizing your day</p>
         </div>
 
-        <form action="#" th:action="@{/users}" method="POST" class="space-y-6">
+        <form action="#" th:action="@{/user}" method="POST" class="space-y-6">
             <div class="text-left space-y-2">
                 <label for="name" class="font-medium">Full Name</label>
                 <input
@@ -54,7 +54,7 @@
                 <label for="email" class="font-medium">Email</label>
                 <input
                         id="email"
-                        name="username"
+                        name="email"
                         type="email"
                         placeholder="your@email.com"
                         required
@@ -93,6 +93,29 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Impede o envio padrão do formulário
+
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+
+        const response = await fetch('/user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            window.location.href = '/login'; // Redireciona em caso de sucesso
+        } else {
+            alert('Erro ao criar conta. Verifique os dados.');
+        }
+    });
+</script>
 
 </body>
 </html>
