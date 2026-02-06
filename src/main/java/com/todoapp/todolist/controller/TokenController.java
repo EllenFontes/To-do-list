@@ -41,7 +41,7 @@ public class TokenController {
         response.addCookie(cookie);
 
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, "/login")
+                .header(HttpHeaders.LOCATION, "/")
                 .build();
     }
 

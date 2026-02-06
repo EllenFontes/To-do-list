@@ -53,4 +53,9 @@ public class LoginViewController {
         return "index";
     }
 
+    @GetMapping("/register")
+    public String registerPage() {
+        return "register";
+    }
+
 }
