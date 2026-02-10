@@ -12,8 +12,13 @@
     .hidden { display: none; }
     .ml-13 { margin-left: 3.25rem; }
     .btn-delete:hover { color: #ef4444; }
+    .btn-edit:hover { color: #3b82f6; }
     .task-card { display: flex; align-items: flex-start; gap: 1rem; }
     .flex-1 { flex: 1; }
+    .status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; margin-left: 0.5rem; }
+    .status-todo { background: #f3f4f6; color: #374151; }
+    .status-progress { background: #dbeafe; color: #1e40af; }
+    .status-completed { background: #dcfce7; color: #166534; }
   </style>
 </head>
 <body class="dashboard-body">
@@ -54,7 +59,6 @@
       </header>
 
       <div class="filter-group" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
-
         <div class="pills-container" style="display: flex; gap: 0.5rem;">
           <button class="pill active" onclick="filterTasks('all', this)">Todas</button>
           <button class="pill" onclick="filterTasks('TODO', this)">A Fazer</button>
@@ -62,11 +66,13 @@
           <button class="pill" onclick="filterTasks('COMPLETED', this)">Concluídas</button>
         </div>
 
-        <button class="btn-signin" style="width: auto; padding: 0 1.5rem; margin-top: 0;" onclick="toggleModal(true)">
+        <button class="btn-signin" style="width: auto; padding: 0 1.5rem; margin-top: 0;" onclick="openCreateModal()">
           <i data-lucide="plus" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;"></i>
           Add New Task
         </button>
-      </div> <div id="taskContainer" class="task-container">
+      </div>
+
+      <div id="taskContainer" class="task-container">
         <div th:each="task : ${listTasks}" class="task-card" th:data-status="${task.status}">
           <button class="toggle-btn" th:onclick="'toggleTaskStatus(' + ${task.id} + ')'">
             <i th:if="${task.status == 'COMPLETED'}" data-lucide="check-circle-2" class="icon-done"></i>
@@ -74,13 +80,27 @@
           </button>
 
           <div class="task-text flex-1">
-            <h3 th:text="${task.title}" th:classappend="${task.status == 'COMPLETED'} ? 'line-through' : ''">Task Title</h3>
+            <div style="display: flex; align-items: center;">
+              <h3 th:text="${task.title}" th:classappend="${task.status == 'COMPLETED'} ? 'line-through' : ''">Task Title</h3>
+              <span th:class="'status-badge ' + (${task.status == 'TODO'} ? 'status-todo' : (${task.status == 'IN_PROGRESS'} ? 'status-progress' : 'status-completed'))"
+                    th:text="${task.status}">STATUS</span>
+            </div>
             <p th:text="${task.description}" class="muted-text">Description</p>
           </div>
 
-          <button class="btn-delete" style="background:none; border:none; cursor:pointer;" th:onclick="'deleteTask(' + ${task.id} + ')'">
-            <i data-lucide="trash-2" class="muted-text"></i>
-          </button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn-edit" style="background:none; border:none; cursor:pointer;"
+                    th:data-id="${task.id}"
+                    th:data-title="${task.title}"
+                    th:data-description="${task.description}"
+                    th:data-status="${task.status}"
+                    onclick="prepareEditModal(this)">
+              <i data-lucide="pencil" class="muted-text"></i>
+            </button>
+            <button class="btn-delete" style="background:none; border:none; cursor:pointer;" th:onclick="'deleteTask(' + ${task.id} + ')'">
+              <i data-lucide="trash-2" class="muted-text"></i>
+            </button>
+          </div>
         </div>
 
         <div th:if="${#lists.isEmpty(listTasks)}" id="emptyState" class="text-center py-16">
@@ -91,13 +111,14 @@
   </main>
 </div>
 
-<div id="createModal" class="modal">
+<div id="taskModal" class="modal">
   <div class="login-card" style="max-width: 500px; position: relative;">
     <button onclick="toggleModal(false)" style="position: absolute; right: 1.5rem; top: 1.5rem; background: none; border: none; cursor: pointer;">
       <i data-lucide="x"></i>
     </button>
 
-    <h2 style="text-align: left; margin-bottom: 1.5rem;">Create New Task</h2>
+    <h2 id="modalTitle" style="text-align: left; margin-bottom: 1.5rem;">Create New Task</h2>
+    <input type="hidden" id="taskId">
 
     <div class="input-group">
       <label for="taskTitle">Task Title</label>
@@ -120,7 +141,7 @@
 
     <div style="display: flex; gap: 1rem; margin-top: 2rem;">
       <button class="pill" style="flex: 1; height: 3.5rem;" onclick="toggleModal(false)">Cancel</button>
-      <button class="btn-signin" style="flex: 1; margin-top: 0;" onclick="handleCreateTask()">Create Task</button>
+      <button id="modalSubmitBtn" class="btn-signin" style="flex: 1; margin-top: 0;" onclick="handleSaveTask()">Create Task</button>
     </div>
   </div>
 </div>
@@ -129,18 +150,47 @@
   lucide.createIcons();
 
   function toggleModal(show) {
-    document.getElementById('createModal').classList.toggle('active', show);
+    document.getElementById('taskModal').classList.toggle('active', show);
   }
 
-  async function handleCreateTask() {
+  function openCreateModal() {
+    document.getElementById('modalTitle').innerText = "Create New Task";
+    document.getElementById('modalSubmitBtn').innerText = "Create Task";
+    document.getElementById('taskId').value = "";
+    document.getElementById('taskTitle').value = "";
+    document.getElementById('taskDescription').value = "";
+    document.getElementById('taskStatus').value = "TODO";
+    toggleModal(true);
+  }
+
+  function prepareEditModal(btn) {
+    const id = btn.getAttribute('data-id');
+    const title = btn.getAttribute('data-title');
+    const description = btn.getAttribute('data-description');
+    const status = btn.getAttribute('data-status');
+
+    document.getElementById('modalTitle').innerText = "Edit Task";
+    document.getElementById('modalSubmitBtn').innerText = "Update Task";
+    document.getElementById('taskId').value = id;
+    document.getElementById('taskTitle').value = title;
+    document.getElementById('taskDescription').value = description;
+    document.getElementById('taskStatus').value = status;
+    toggleModal(true);
+  }
+
+  async function handleSaveTask() {
+    const id = document.getElementById('taskId').value;
     const title = document.getElementById('taskTitle').value;
     const description = document.getElementById('taskDescription').value;
     const status = document.getElementById('taskStatus').value;
 
     if (!title) return alert("Title is required");
 
-    const response = await fetch('/tasks', {
-      method: 'POST',
+    const url = id ? `/tasks/${id}` : '/tasks';
+    const method = id ? 'PUT' : 'POST';
+
+    const response = await fetch(url, {
+      method: method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         taskTitle: title,
@@ -152,14 +202,11 @@
     if (response.ok) {
       window.location.reload();
     } else {
-      const errorData = await response.json();
-      console.error("Erro na validação:", errorData);
-      alert("Erro ao criar tarefa: " + (errorData.error || "Verifique os campos"));
+      alert("Erro ao salvar tarefa");
     }
   }
 
   function filterTasks(status, btn) {
-
     document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
 
@@ -180,7 +227,7 @@
   }
 
   async function toggleTaskStatus(id) {
-    console.log("Toggle status for task:", id);
+    window.location.reload();
   }
 </script>
 </body>
