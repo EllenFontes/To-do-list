@@ -2,6 +2,8 @@ package com.todoapp.todolist.service;
 
 import com.todoapp.todolist.controller.dto.CreateUserDTO;
 import com.todoapp.todolist.entity.User;
+import com.todoapp.todolist.exception.UserAlreadyExistsException;
+import com.todoapp.todolist.exception.UserNotFoundException;
 import com.todoapp.todolist.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,6 +53,8 @@ class UserServiceTest {
         assertNotNull(result);
         assertEquals(dto.email(), result.getEmail());
         verify(userRepository, times(1)).save(any(User.class));
+
+        verify(passwordEncoder, times(1)).encode(dto.password());
     }
 
     @Test
@@ -61,9 +65,53 @@ class UserServiceTest {
         when(userRepository.findByEmail(dto.email())).thenReturn(Optional.of(new User()));
 
         // Act & Assert
-        assertThrows(ResponseStatusException.class, () -> userService.create(dto));
+        assertThrows(UserAlreadyExistsException.class, () -> userService.create(dto));
         verify(userRepository, never()).save(any(User.class));
     }
+
+
+    @Test
+    @DisplayName("Should return user data when id is found")
+    void shouldReturnUserProfile_WhenIdIsFound() {
+        //Arrange
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Ellen");
+        user.setPassword("encoded_password");
+        user.setEmail("ellen@email.com");
+
+        Long id = 1L;
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+        //Act
+
+        User result = userService.getMyProfile(id);
+
+        //Assert
+
+        verify(userRepository, times(1)).findById(id);
+        assertNotNull(result);
+        assertEquals(user.getEmail(), result.getEmail());
+        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getName(), result.getName());
+    }
+
+
+    @Test
+    @DisplayName("Should return UserNotFoundException when id is not found")
+    void shouldThrowException_WhenIdIsNotFound() {
+        //Arrange
+        Long id = 1L;
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        //Act & assert
+        assertThrows(UserNotFoundException.class, () -> userService.getMyProfile(id));
+
+
+    }
+
 
 
 }

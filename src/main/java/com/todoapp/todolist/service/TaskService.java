@@ -11,6 +11,7 @@ import com.todoapp.todolist.exception.UserNotFoundException;
 import com.todoapp.todolist.repository.TaskRepository;
 import com.todoapp.todolist.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import com.todoapp.todolist.entity.enums.TaskStatus;
 
 import java.util.List;
 
@@ -49,9 +50,9 @@ public class TaskService {
             throw new AccessDeniedException("You don't have permission to access this task");
         }
 
-        task.setTitle(updateTaskDTO.title());
-        task.setDescription(updateTaskDTO.description());
-        task.setStatus(updateTaskDTO.status());
+        task.setTitle(updateTaskDTO.taskTitle());
+        task.setDescription(updateTaskDTO.taskDescription());
+        task.setStatus(updateTaskDTO.taskStatus());
 
         return taskRepository.save(task);
 
@@ -62,14 +63,13 @@ public class TaskService {
         return taskRepository.findByUserId(userId);
     }
 
+
     public long getCompletedTasksCount(Long userId){
         List<Task> tasks = getAllTasks(userId);
 
         return tasks.stream()
-                .filter(t -> "COMPLETED".equals(t.getStatus()))
+                .filter(t -> TaskStatus.COMPLETED.equals(t.getStatus()))
                 .count();
     }
-
-
 
 }

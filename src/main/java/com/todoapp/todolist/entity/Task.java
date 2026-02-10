@@ -1,6 +1,7 @@
 package com.todoapp.todolist.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.todoapp.todolist.entity.enums.TaskStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -26,9 +27,9 @@ public class Task {
     @Column(name = "TASK_DESCRIPTION")
     private String description;
 
-    @NotBlank(message = "Status is required")
+    @Enumerated(EnumType.STRING)
     @Column(name = "TASK_STATUS", nullable = false)
-    private String status;
+    private TaskStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "TASK_USER_ID")

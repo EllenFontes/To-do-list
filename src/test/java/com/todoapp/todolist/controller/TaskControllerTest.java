@@ -3,6 +3,7 @@ package com.todoapp.todolist.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.todoapp.todolist.controller.dto.CreateTaskDTO;
 import com.todoapp.todolist.entity.Task;
+import com.todoapp.todolist.entity.enums.TaskStatus;
 import com.todoapp.todolist.service.TaskService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,13 +39,13 @@ class TaskControllerTest {
     void createTask_ShouldReturnOk_WhenDataIsValid() throws Exception{
         //Arrange
 
-        CreateTaskDTO createTaskDTO = new CreateTaskDTO("Tarefa Teste", "Desc", "PENDING");
+        CreateTaskDTO createTaskDTO = new CreateTaskDTO("Tarefa Teste", "Desc", TaskStatus.PENDING);
 
         Task createdTask = new Task();
         createdTask.setId(1L);
         createdTask.setTitle("Tarefa Teste");
         createdTask.setDescription("Desc");
-        createdTask.setStatus("PENDING");
+        createdTask.setStatus(TaskStatus.PENDING);
 
         when(taskService.create(any(CreateTaskDTO.class), eq(1L))).thenReturn(createdTask);
 
@@ -60,5 +61,20 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.title").value("Tarefa Teste"))
                 .andExpect(jsonPath("$.status").value("PENDING"));
+    }
+
+
+    @Test
+    @DisplayName("Should return bad request when title is invalid")
+    void createTask_ShouldReturnBadRequest_WhenTitleIsInvalid() throws  Exception {
+
+        CreateTaskDTO dto = new CreateTaskDTO("", "description", TaskStatus.PENDING );
+
+        mockMvc.perform(post("/tasks")
+                .with(jwt().jwt(builder -> builder.subject("1")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+        ).andExpect(status().isBadRequest());
+
     }
 }

@@ -1,8 +1,10 @@
 package com.todoapp.todolist.controller.dto;
 
+import com.todoapp.todolist.entity.enums.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public record UpdateTaskDTO(@NotBlank(message = "Title is required") String title,
-                            String description,
-                            @NotBlank(message = "Status is required") String status) {
+public record UpdateTaskDTO(@NotBlank(message = "Title is required") String taskTitle,
+                            String taskDescription,
+                            @NotNull(message = "Status is required") TaskStatus taskStatus) {
 }
