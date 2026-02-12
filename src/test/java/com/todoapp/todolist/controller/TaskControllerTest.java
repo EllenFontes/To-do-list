@@ -39,13 +39,13 @@ class TaskControllerTest {
     void createTask_ShouldReturnOk_WhenDataIsValid() throws Exception{
         //Arrange
 
-        CreateTaskDTO createTaskDTO = new CreateTaskDTO("Tarefa Teste", "Desc", TaskStatus.PENDING);
+        CreateTaskDTO createTaskDTO = new CreateTaskDTO("Tarefa Teste", "Desc", TaskStatus.TODO);
 
         Task createdTask = new Task();
         createdTask.setId(1L);
         createdTask.setTitle("Tarefa Teste");
         createdTask.setDescription("Desc");
-        createdTask.setStatus(TaskStatus.PENDING);
+        createdTask.setStatus(TaskStatus.TODO);
 
         when(taskService.create(any(CreateTaskDTO.class), eq(1L))).thenReturn(createdTask);
 
@@ -68,7 +68,7 @@ class TaskControllerTest {
     @DisplayName("Should return bad request when title is invalid")
     void createTask_ShouldReturnBadRequest_WhenTitleIsInvalid() throws  Exception {
 
-        CreateTaskDTO dto = new CreateTaskDTO("", "description", TaskStatus.PENDING );
+        CreateTaskDTO dto = new CreateTaskDTO("", "description", TaskStatus.TODO);
 
         mockMvc.perform(post("/tasks")
                 .with(jwt().jwt(builder -> builder.subject("1")))

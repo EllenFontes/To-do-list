@@ -48,7 +48,7 @@ class TaskServiceTest {
         task.setId(30L);
         task.setTitle("Estudar Testes");
         task.setDescription("Criar testes unitários para o TaskService");
-        task.setStatus(TaskStatus.PENDING);
+        task.setStatus(TaskStatus.TODO);
         task.setUser(user);
     }
 
@@ -69,7 +69,7 @@ class TaskServiceTest {
     @DisplayName("Should create task successfully when user exists")
     void create_ShouldSaveTask_WhenUserExists() {
         //Arrange
-        CreateTaskDTO taskDTO = new CreateTaskDTO("Nova Tarefa", "Desc", TaskStatus.PENDING);
+        CreateTaskDTO taskDTO = new CreateTaskDTO("Nova Tarefa", "Desc", TaskStatus.TODO);
         User userMock = new User();
         userMock.setId(1L);
 
@@ -91,7 +91,7 @@ class TaskServiceTest {
     @DisplayName("Should throw UserNotFoundException when user is not found")
     void create_ShouldThrowException_WhenUserNotFound() {
         //Arrange
-        CreateTaskDTO createTaskDTO = new CreateTaskDTO("Nova Tarefa", "Desc", TaskStatus.PENDING);
+        CreateTaskDTO createTaskDTO = new CreateTaskDTO("Nova Tarefa", "Desc", TaskStatus.TODO);
 
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -107,7 +107,7 @@ class TaskServiceTest {
     @DisplayName("Should update task when user owns task")
     void update_ShouldUpdateTask_WhenUserIsOwner() {
         //Arrange
-        UpdateTaskDTO updateTaskDTO = new UpdateTaskDTO("Nova Tarefa Editada", "Desc Editada", TaskStatus.PENDING);
+        UpdateTaskDTO updateTaskDTO = new UpdateTaskDTO("Nova Tarefa Editada", "Desc Editada", TaskStatus.TODO);
 
         User userMock = new User();
         userMock.setId(1L);
@@ -139,7 +139,7 @@ class TaskServiceTest {
     void update_ShouldThrowException_WhenUserIsNotOwner() {
         //Arrange
 
-        UpdateTaskDTO updateTaskDTO = new UpdateTaskDTO("Nova Tarefa Editada", "Desc Editada", TaskStatus.PENDING);
+        UpdateTaskDTO updateTaskDTO = new UpdateTaskDTO("Nova Tarefa Editada", "Desc Editada", TaskStatus.TODO);
         User userMockOwner = new User();
         userMockOwner.setId(1L);
 

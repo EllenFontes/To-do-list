@@ -1,7 +1,7 @@
 package com.todoapp.todolist.entity.enums;
 
 public enum TaskStatus {
-    PENDING("Pendente"),
+    TODO("Pendente"),
     IN_PROGRESS("Em Andamento"),
     COMPLETED("Concluído");
 
