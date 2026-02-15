@@ -9,7 +9,7 @@
   <style>
     .modal { display: none; position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.2); align-items: center; justify-content: center; padding: 1rem; }
     .modal.active { display: flex; }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
     .ml-13 { margin-left: 3.25rem; }
     .btn-delete:hover { color: #ef4444; }
     .btn-edit:hover { color: #3b82f6; }
@@ -73,16 +73,17 @@
       </div>
 
       <div id="taskContainer" class="task-container">
-        <div th:each="task : ${listTasks}" class="task-card" th:data-status="${task.status}">
+        <div th:each="task : ${listTasks}" class="task-card" th:data-status="${task.status.name()}">
           <button class="toggle-btn" th:onclick="'toggleTaskStatus(' + ${task.id} + ')'">
-            <i th:if="${task.status == 'COMPLETED'}" data-lucide="check-circle-2" class="icon-done"></i>
-            <i th:unless="${task.status == 'COMPLETED'}" data-lucide="circle" class="icon-todo"></i>
+            <i th:if="${task.status.name() == 'COMPLETED'}" data-lucide="check-circle-2" class="icon-done"></i>
+            <i th:unless="${task.status.name() == 'COMPLETED'}" data-lucide="circle" class="icon-todo"></i>
           </button>
 
           <div class="task-text flex-1">
             <div style="display: flex; align-items: center;">
-              <h3 th:text="${task.title}" th:classappend="${task.status == 'COMPLETED'} ? 'line-through' : ''">Task Title</h3>
-              <span th:class="'status-badge ' + (${task.status == 'TODO'} ? 'status-todo' : (${task.status == 'IN_PROGRESS'} ? 'status-progress' : 'status-completed'))"
+              <h3 th:text="${task.title}" th:classappend="${task.status.name() == 'COMPLETED'} ? 'line-through' : ''">Task Title</h3>
+
+              <span th:class="'status-badge ' + (${task.status.name() == 'TODO'} ? 'status-todo' : (${task.status.name() == 'IN_PROGRESS'} ? 'status-progress' : 'status-completed'))"
                     th:text="${task.status}">STATUS</span>
             </div>
             <p th:text="${task.description}" class="muted-text">Description</p>
@@ -93,7 +94,7 @@
                     th:data-id="${task.id}"
                     th:data-title="${task.title}"
                     th:data-description="${task.description}"
-                    th:data-status="${task.status}"
+                    th:data-status="${task.status.name()}"
                     onclick="prepareEditModal(this)">
               <i data-lucide="pencil" class="muted-text"></i>
             </button>
