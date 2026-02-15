@@ -96,23 +96,44 @@
 
 <script>
     document.querySelector('form').addEventListener('submit', async (e) => {
-        e.preventDefault(); // Impede o envio padrão do formulário
+        e.preventDefault();
 
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
+        const submitBtn = e.target.querySelector('button[type="submit"]');
 
-        const response = await fetch('/user', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+        const originalBtnText = submitBtn.innerText;
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Criando...";
 
-        if (response.ok) {
-            window.location.href = '/login'; // Redireciona em caso de sucesso
-        } else {
-            alert('Erro ao criar conta. Verifique os dados.');
+        try {
+            const response = await fetch('/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                // SUCESSO
+                alert('Conta criada com sucesso! Você será redirecionado para o login.');
+                window.location.href = '/login';
+            } else {
+                // ERRO
+                // Tenta ler a mensagem enviada pelo Backend (RestExceptionHandler)
+                const errorData = await response.json();
+
+                // Exibe a mensagem do backend ou uma genérica se não houver mensagem
+                alert(errorData.message || 'Erro ao criar conta. Verifique os dados.');
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            alert('Erro de conexão com o servidor.');
+        } finally {
+            // Reabilita o botão
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalBtnText;
         }
     });
 </script>
