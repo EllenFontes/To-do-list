@@ -222,9 +222,21 @@
   }
 
   async function deleteTask(id) {
-    if (!confirm("Delete this task?")) return;
-    const response = await fetch(`/tasks/${id}`, { method: 'DELETE' });
-    if (response.ok) window.location.reload();
+    if (!confirm("Deseja realmente excluir esta tarefa?")) return;
+    try {
+      const response = await fetch(`/tasks/${id}`, {
+        method: 'DELETE' // Envia a requisição DELETE
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        alert("Erro ao excluir a tarefa.");
+      }
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+      alert("Erro de conexão com o servidor.");
+    }
   }
 
   async function toggleTaskStatus(id) {

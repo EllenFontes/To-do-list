@@ -47,7 +47,7 @@ public class TaskService {
                 .orElseThrow(() -> new TaskNotFoundException(taskId));
 
         if (task.getUser().getId() != userId) {
-            throw new AccessDeniedException("You don't have permission to access this task");
+            throw new AccessDeniedException("You don't have permission to modify this task");
         }
 
         task.setTitle(updateTaskDTO.taskTitle());
@@ -57,6 +57,20 @@ public class TaskService {
         return taskRepository.save(task);
 
     }
+
+    public void delete(Long taskId, Long userId){
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException(taskId));
+
+        if (task.getUser().getId() != userId) {
+            throw  new AccessDeniedException("You don't have permission to modify this task");
+        }
+
+        taskRepository.delete(task);
+
+    }
+
 
 
     public List<Task> getAllTasks(Long userId) {

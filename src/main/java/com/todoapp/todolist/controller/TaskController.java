@@ -52,5 +52,16 @@ public class TaskController {
         return ResponseEntity.ok(listTasks);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable("id") long taskId, @AuthenticationPrincipal Jwt jwt){
+
+        Long userId = Long.valueOf(jwt.getSubject());
+
+        taskService.delete(taskId, userId);
+
+
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
