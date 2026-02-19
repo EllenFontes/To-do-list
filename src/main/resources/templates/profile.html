@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - Calm Tasks</title>
+    <title>Perfil - Calm Tasks</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -22,59 +22,59 @@
                 <i data-lucide="list-todo" class="icon-primary"></i>
             </div>
             <h2>Calm Tasks</h2>
-            <p class="muted-text ml-13">Your mindful to-do list</p>
+            <p class="muted-text ml-13">Sua lista de tarefas consciente</p>
         </div>
 
         <nav class="sidebar-nav" style="flex: 1">
             <a th:href="@{/tasks-view}" class="nav-item">
                 <i data-lucide="list-todo"></i>
-                <span>Tasks</span>
+                <span>Tarefas</span>
             </a>
             <a th:href="@{/profile}" class="nav-item active">
                 <i data-lucide="user"></i>
-                <span>Profile</span>
+                <span>Perfil</span>
             </a>
         </nav>
 
         <form th:action="@{/auth/logout}" method="post" id="logoutForm" style="display: none;"></form>
         <a href="javascript:void(0)" onclick="document.getElementById('logoutForm').submit();" class="nav-item logout">
             <i data-lucide="log-out"></i>
-            <span>Sign Out</span>
+            <span>Sair</span>
         </a>
     </aside>
 
     <main class="main-content">
         <div class="max-w-5xl mx-auto">
             <header class="content-header" style="margin-bottom: 2rem;">
-                <h1>Profile Settings</h1>
-                <p class="muted-text">Manage your account and preferences</p>
+                <h1>Configurações de Perfil</h1>
+                <p class="muted-text">Gerencie sua conta e preferências</p>
             </header>
 
             <div class="grid-layout">
                 <div class="task-card" style="padding: 2rem;">
                     <form id="profileForm" class="space-y-6">
                         <div class="input-group">
-                            <label for="name">Full Name</label>
+                            <label for="name">Nome Completo</label>
                             <input type="text" id="name" th:value="${user.name}" required>
                         </div>
 
                         <div class="input-group">
-                            <label for="email">Email Address</label>
+                            <label for="email">Endereço de E-mail</label>
                             <input type="email" id="email" th:value="${user.email}" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
                         </div>
 
                         <div class="input-group">
-                            <label for="bio">Bio</label>
-                            <input type="text" id="bio" placeholder="Designer & mindful productivity enthusiast">
+                            <label for="bio">Biografia</label>
+                            <input type="text" id="bio" placeholder="Designer e entusiasta de produtividade consciente">
                         </div>
 
                         <div class="input-group">
-                            <label for="password">New Password</label>
-                            <input type="password" id="password" placeholder="Leave blank to keep current">
+                            <label for="password">Nova Senha</label>
+                            <input type="password" id="password" placeholder="Deixe em branco para manter a atual">
                         </div>
 
                         <button type="submit" class="btn-signin" style="margin-top: 1rem;">
-                            Save Changes
+                            Salvar Alterações
                         </button>
                     </form>
                 </div>
@@ -84,21 +84,21 @@
                         <div class="stat-circle">
                             <i data-lucide="check-circle-2" class="icon-primary" style="width: 40px; height: 40px;"></i>
                         </div>
-                        <h3 style="margin-bottom: 0.5rem;">Tasks Completed</h3>
+                        <h3 style="margin-bottom: 0.5rem;">Tarefas Concluídas</h3>
                         <div style="font-size: 3.5rem; font-weight: 500; color: var(--foreground); margin-bottom: 1rem;" th:text="${completedCount}">0</div>
-                        <p class="muted-text">You're making great progress on your journey to mindful productivity</p>
+                        <p class="muted-text">Você está fazendo um ótimo progresso na sua jornada de produtividade</p>
                     </div>
 
                     <div class="achievement-card">
-                        <h4 style="margin-bottom: 1rem;">Achievements</h4>
+                        <h4 style="margin-bottom: 1rem;">Conquistas</h4>
                         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
                                 <div style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--primary);"></div>
-                                <span class="muted-text">7 day streak</span>
+                                <span class="muted-text">Frequência de 7 dias</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
                                 <div style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--primary);"></div>
-                                <span class="muted-text">Early adopter</span>
+                                <span class="muted-text">Usuário pioneiro</span>
                             </div>
                         </div>
                     </div>
@@ -113,7 +113,7 @@
 
     document.getElementById('profileForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        alert("Profile functionality to be implemented in the backend!");
+        alert("Funcionalidade de perfil será implementada no backend!");
     });
 </script>
 </body>

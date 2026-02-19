@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calm Tasks - Create Account</title>
+    <title>Calm Tasks - Criar Conta</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,48 +27,48 @@
 
 <a th:href="@{/}" class="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-2xl hover:bg-zinc-200 transition-colors text-sm font-medium">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-    Back to Home
+    Voltar para Início
 </a>
 
 <div class="w-full max-w-md">
     <div class="login-card w-full !max-w-none !p-12">
         <div class="mb-8 text-center">
-            <h1 class="text-2xl font-bold mb-2">Create Your Account</h1>
-            <p class="text-zinc-500">Join us and start organizing your day</p>
+            <h1 class="text-2xl font-bold mb-2">Crie Sua Conta</h1>
+            <p class="text-zinc-500">Junte-se a nós e comece a organizar o seu dia</p>
         </div>
 
         <form action="#" th:action="@{/user}" method="POST" class="space-y-6">
             <div class="text-left space-y-2">
-                <label for="name" class="font-medium">Full Name</label>
+                <label for="name" class="font-medium">Nome Completo</label>
                 <input
                         id="name"
                         name="name"
                         type="text"
-                        placeholder="John Doe"
+                        placeholder="João Silva"
                         required
                         class="w-full h-12 rounded-2xl bg-white border border-border px-4 outline-none focus:border-primary transition-colors"
                 >
             </div>
 
             <div class="text-left space-y-2">
-                <label for="email" class="font-medium">Email</label>
+                <label for="email" class="font-medium">E-mail</label>
                 <input
                         id="email"
                         name="email"
                         type="email"
-                        placeholder="your@email.com"
+                        placeholder="seu@email.com"
                         required
                         class="w-full h-12 rounded-2xl bg-white border border-border px-4 outline-none focus:border-primary transition-colors"
                 >
             </div>
 
             <div class="text-left space-y-2">
-                <label for="password" class="font-medium">Password</label>
+                <label for="password" class="font-medium">Senha</label>
                 <input
                         id="password"
                         name="password"
                         type="password"
-                        placeholder="Create a strong password"
+                        placeholder="Crie uma senha forte"
                         required
                         minlength="8"
                         class="w-full h-12 rounded-2xl bg-white border border-border px-4 outline-none focus:border-primary transition-colors"
@@ -79,15 +79,15 @@
                     type="submit"
                     class="btn-signin !w-full !mt-8 !h-14 !rounded-2xl"
             >
-                Create Account
+                Criar Conta
             </button>
         </form>
 
         <div class="mt-6 text-center">
             <div class="text-zinc-500">
-                Already have an account?
+                Já tem uma conta?
                 <a th:href="@{/login}" class="text-primary hover:underline font-medium ml-1">
-                    Sign in
+                    Entrar
                 </a>
             </div>
         </div>
@@ -116,27 +116,20 @@
             });
 
             if (response.ok) {
-                // SUCESSO
                 alert('Conta criada com sucesso! Você será redirecionado para o login.');
                 window.location.href = '/login';
             } else {
-                // ERRO
-                // Tenta ler a mensagem enviada pelo Backend (RestExceptionHandler)
                 const errorData = await response.json();
-
-                // Exibe a mensagem do backend ou uma genérica se não houver mensagem
                 alert(errorData.message || 'Erro ao criar conta. Verifique os dados.');
             }
         } catch (error) {
             console.error('Erro na requisição:', error);
             alert('Erro de conexão com o servidor.');
         } finally {
-            // Reabilita o botão
             submitBtn.disabled = false;
             submitBtn.innerText = originalBtnText;
         }
     });
 </script>
-
 </body>
 </html>
