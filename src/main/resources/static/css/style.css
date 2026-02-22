@@ -101,6 +101,12 @@ input {
     padding: 2rem;
     display: flex;
     flex-direction: column;
+
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .sidebar-header { margin-bottom: 3rem; }
