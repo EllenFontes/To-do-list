@@ -1,8 +1,8 @@
-# To-Do List API 📝
+# Calm Tasks - To-Do List API 📝🌿
 
-API backend para gerenciamento de tarefas pessoais, desenvolvida para fornecer um controle eficiente de afazeres com **segurança de ponta**.
+API backend e aplicação web para gerenciamento de tarefas pessoais ("Calm Tasks"), desenvolvida para fornecer um controle eficiente de afazeres com **segurança de ponta** e uma interface minimalista.
 
-O projeto utiliza **Spring Boot 3.4.3** para uma arquitetura robusta e **Spring Security 6** com **JWT (JSON Web Tokens)** assinado por **chaves RSA**, garantindo autenticação stateless e segura.
+O projeto utiliza **Spring Boot 3.4.3** para uma arquitetura robusta e **Spring Security 6** com **JWT (JSON Web Tokens)** assinado por **chaves RSA**, garantindo autenticação segura via **Cookies HttpOnly**. Além da API REST, o projeto conta com um frontend renderizado no servidor usando **Thymeleaf**.
 
 ---
 
@@ -14,42 +14,38 @@ O projeto utiliza **Spring Boot 3.4.3** para uma arquitetura robusta e **Spring 
 - [Configuração do Ambiente](#️-configuração-do-ambiente)
 - [Modelagem do Banco de Dados](#-modelagem-do-banco-de-dados)
 - [Documentação da API (Endpoints)](#️-documentação-da-api-endpoints)
-
----
-
-# 🕹️ Documentação da API (Endpoints)
-
-A seguir estão detalhados os endpoints disponíveis na **To-Do List API**.
-
----
-
-## 🔗 Navegação Rápida
-- [Endpoints de Autenticação](#-endpoints-de-autenticação)
-- [Endpoints de Tarefas](#-endpoints-de-tarefas)
+- [Páginas Web (Frontend)](#-páginas-web-frontend)
 
 ---
 
 ## ✨ Funcionalidades
 
-A API implementa um ciclo completo de gerenciamento de tarefas aliado a um sistema de segurança rigoroso.
+A aplicação implementa um ciclo completo de gerenciamento de tarefas aliado a um sistema de segurança rigoroso.
 
-- ✅ **Autenticação JWT com RSA**: Login seguro que retorna um token assinado por uma chave privada RSA de 2048 bits.
-- ✅ **Gestão de Tarefas (CRUD)**: Criação, listagem, atualização e exclusão de tarefas vinculadas ao usuário.
+- ✅ **Frontend Integrado**: Interface visual completa ("Calm Tasks") usando Thymeleaf, TailwindCSS e Lucide Icons.
+- ✅ **Autenticação JWT com RSA**: Login seguro que retorna um token JWT assinado por uma chave privada RSA de 2048 bits, armazenado de forma segura em um **Cookie HttpOnly**.
+- ✅ **Gestão de Tarefas**: Criação, listagem e atualização de tarefas vinculadas exclusivamente ao usuário autenticado.
 - ✅ **Relacionamento entre Entidades**: Cada tarefa é obrigatoriamente vinculada a um usuário dono.
-- ✅ **Segurança Stateless**: Nenhuma sessão é armazenada no servidor; a validação ocorre via token em cada requisição.
+- ✅ **Tratamento de Exceções**: Retornos padronizados e amigáveis para erros de validação, não autorização e recursos não encontrados.
 - ✅ **Persistência em MySQL**: Banco de dados relacional para armazenamento seguro dos dados.
 
 ---
 
 ## 🚀 Tecnologias Utilizadas
 
+**Backend:**
 - **Java 17** – Linguagem principal  
 - **Spring Boot 3.4.3** – Framework base  
-- **Spring Security 6** – Proteção de rotas e autenticação JWT  
+- **Spring Security 6** – Proteção de rotas e autenticação JWT via Cookies  
 - **Spring Data JPA** – Persistência e comunicação com o banco  
-- **JWT (Nimbus JOSE + JWT)** – Geração e validação de tokens  
+- **JWT (Nimbus JOSE + JWT)** – Geração e validação de tokens RSA  
 - **MySQL** – Banco de dados relacional  
 - **Lombok** – Redução de código boilerplate  
+
+**Frontend:**
+- **Thymeleaf** – Template engine para renderização SSR  
+- **TailwindCSS** – Estilização utilitária (via CDN)  
+- **Lucide Icons** – Ícones minimalistas  
 
 ---
 
@@ -68,40 +64,36 @@ A API implementa um ciclo completo de gerenciamento de tarefas aliado a um siste
 ### 1️⃣ Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/todolist-api.git
+git clone [https://github.com/seu-usuario/todolist-api.git](https://github.com/seu-usuario/todolist-api.git)
 cd todolist-api
 ```
 
-## 2️⃣ Geração das Chaves RSA (Obrigatório)
+### 2️⃣ Geração das Chaves RSA (Obrigatório)
 
-O projeto utiliza criptografia assimétrica. As chaves devem ser geradas através do git bash
-no diretório `src/main/resources` para que o Spring as reconheça no **classpath**.
+O projeto utiliza criptografia assimétrica. As chaves devem ser geradas através do git bash no diretório `src/main/resources` para que o Spring as reconheça no classpath.
 
-Abra o **Git Bash** nessa pasta e execute **um comando por vez**.
+Abra o Git Bash nessa pasta e execute um comando por vez:
 
-### 🔑 Gerar a chave privada
+🔑 **Gerar a chave privada:**
 
 ```bash
 openssl genrsa -out app.key.pem 2048
 ```
 
-### 🔄 Converter para o formato PKCS#8  
-*(Necessário para o Spring Security)*
+🔄 **Converter para o formato PKCS#8** (Necessário para o Spring Security):
 
 ```bash
 openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt \
 -in app.key.pem -out app.key.pem.tmp && mv app.key.pem.tmp app.key.pem
 ```
 
-### 🔓 Gerar a chave pública
+🔓 **Gerar a chave pública:**
 
 ```bash
 openssl rsa -in app.key.pem -pubout -out app.pub.pem
 ```
 
-⚠️ **Atenção:**  
-
-Os arquivos `.pem` estão listados no `.gitignore` e **não devem ser enviados para o GitHub**. 🚫🔐
+> ⚠️ **Atenção:** Os arquivos `.pem` estão listados no `.gitignore` e não devem ser enviados para o repositório remoto. 🚫🔐
 
 ---
 
@@ -110,12 +102,12 @@ Os arquivos `.pem` estão listados no `.gitignore` e **não devem ser enviados p
 Crie o banco de dados e as tabelas utilizando o script abaixo:
 
 ```sql
-CREATE DATABASE TO_DO_LIST;
+CREATE DATABASE TO_DO_LIST DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE TO_DO_LIST;
 
 CREATE TABLE DB_USER (
     USER_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
-    USER_NAME VARCHAR(24) NOT NULL,
+    USER_NAME VARCHAR(100) NOT NULL,
     USER_EMAIL VARCHAR(128) NOT NULL UNIQUE,
     USER_PASSWORD VARCHAR(255) NOT NULL
 );
@@ -125,7 +117,7 @@ CREATE TABLE DB_TASK (
     TASK_DESCRIPTION VARCHAR(128),
     TASK_STATUS VARCHAR(16) NOT NULL,
     TASK_TITLE VARCHAR(128) NOT NULL,
-    TASK_USER_ID BIGINT,
+    TASK_USER_ID BIGINT NOT NULL,
     CONSTRAINT fk_id_user 
         FOREIGN KEY (TASK_USER_ID) 
         REFERENCES DB_USER(USER_ID) 
@@ -133,9 +125,9 @@ CREATE TABLE DB_TASK (
 );
 ```
 
-## 🔧 Configuração das Credenciais
+### 🔧 Configuração das Credenciais
 
-Edite o arquivo `src/main/resources/application.properties`:
+Edite o arquivo `src/main/resources/application.properties` com suas credenciais do MySQL:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/to_do_list
@@ -143,30 +135,20 @@ spring.datasource.username=seu_usuario
 spring.datasource.password=sua_senha
 ```
 
-## 🕹️ Documentação da API (Endpoints)
-
-### 🔐 Endpoints de Autenticação
-
-Rotas públicas para gestão de acesso e criação de contas.
-
 ---
 
+## 🕹️ Documentação da API (Endpoints REST)
+
+### 🔐 Endpoints de Autenticação e Usuário
+
 #### 1️⃣ Registrar um Novo Usuário
+Cria uma nova conta de usuário no sistema.
 
-Cria uma nova conta de usuário no sistema para que ele possa gerenciar suas próprias tarefas.
+* **Endpoint:** `/user`
+* **Método:** `POST`
+* **Acesso:** Público
 
-**Endpoint:** `/users`  
-**Método:** `POST`
-
-#### 📥 Requisição
-
-| Atributo | Descrição |
-|--------|-----------|
-| URL | `/users` |
-| Método | `POST` |
-| Cabeçalhos | `Content-Type: application/json` |
-
-**Corpo da Requisição (JSON):**
+**Corpo da Requisição:**
 ```json
 {
   "name": "Seu Nome",
@@ -175,22 +157,18 @@ Cria uma nova conta de usuário no sistema para que ele possa gerenciar suas pr�
 }
 ```
 
-#### 📤 Respostas
-- **201 Created** – Usuário registrado com sucesso.
-- **409 Conflict** – E-mail já está em uso.
+**Respostas:**
+* **`201 Created`** – Usuário registrado com sucesso.
+* **`409 Conflict`** – E-mail já está em uso.
 
----
+#### 2️⃣ Autenticar um Usuário (Login)
+Autentica o usuário, retorna o token JWT e injeta automaticamente um Cookie HttpOnly no navegador.
 
-### 2️⃣ Autenticar um Usuário (Login)
+* **Endpoint:** `/auth/login`
+* **Método:** `POST`
+* **Acesso:** Público
 
-Autentica o usuário e retorna um **Token JWT assinado com RSA** para acesso às rotas protegidas.
-
-**Endpoint:** `/login`  
-**Método:** `POST`
-
-#### 📥 Requisição
-
-**Corpo da Requisição (JSON):**
+**Corpo da Requisição:**
 ```json
 {
   "email": "usuario@email.com",
@@ -198,86 +176,122 @@ Autentica o usuário e retorna um **Token JWT assinado com RSA** para acesso às
 }
 ```
 
-#### 📤 Respostas
-- **200 OK** – Autenticação bem-sucedida. Retorna o token JWT.
-- **401 Unauthorized** – Credenciais inválidas.
+**Respostas:**
+* **`200 OK`** – Sucesso (Retorna o JWT e define o Cookie token).
+* **`401 Unauthorized`** – Credenciais inválidas (Bad Credentials).
+
+#### 3️⃣ Sair da Conta (Logout)
+Invalida a sessão excluindo o Cookie de autenticação.
+
+* **Endpoint:** `/auth/logout`
+* **Método:** `POST`
+* **Acesso:** Privado
+
+#### 4️⃣ Obter Perfil Logado
+Retorna os dados do utilizador autenticado no momento.
+
+* **Endpoint:** `/user/me`
+* **Método:** `GET`
+* **Acesso:** Privado
 
 ---
 
-## Endpoints de Tarefas
+### 📝 Endpoints de Tarefas
 
-Todas as rotas abaixo são protegidas e exigem o cabeçalho:
-`Authorization: Bearer <seu_token_jwt>`
+Todas as rotas abaixo são protegidas e exigem autenticação prévia (Cookie JWT ativo). Os status válidos para as tarefas são: `TODO`, `IN_PROGRESS` e `COMPLETED`.
 
-### 1. Criar uma Nova Tarefa
-Cria uma tarefa vinculada automaticamente ao usuário autenticado.
+#### 1. Criar uma Nova Tarefa
+Cria uma tarefa vinculada automaticamente ao utilizador autenticado.
 
-- **Endpoint:** `/tasks`
-- **Método:** `POST`
+* **Endpoint:** `/tasks`
+* **Método:** `POST`
 
-#### 📥 Requisição
-**Corpo da Requisição (CreateTaskDTO):**
+**Corpo da Requisição:**
 ```json
 {
   "taskTitle": "Estudar Spring Boot",
   "taskDescription": "Finalizar o módulo de segurança",
-  "taskStatus": "PENDING"
+  "taskStatus": "TODO"
 }
 ```
-#### 📤 Respostas
-- **`200 OK`** – Tarefa criada com sucesso.
-- **`400 Bad Request`** – Dados inválidos (ex: título em branco).
 
----
+**Respostas:**
+* **`200 OK`** – Tarefa criada com sucesso.
+* **`400 Bad Request`** – Dados inválidos (ex: título em branco).
 
-### 2. Listar Todas as Tarefas
-Retorna todas as tarefas pertencentes ao usuário logado.
+#### 2. Listar Todas as Tarefas
+Retorna todas as tarefas pertencentes ao utilizador logado.
 
-- **Endpoint:** `/tasks`
-- **Método:** `GET`
+* **Endpoint:** `/tasks`
+* **Método:** `GET`
 
-#### 📤 Respostas
-- **`200 OK`** – Retorna a lista de tarefas.
-- **`200 OK []`** – Retorna lista vazia caso não existam tarefas.
+**Respostas:**
+* **`200 OK`** – Retorna a lista de tarefas em formato JSON.
 
----
-
-### 3. Atualizar uma Tarefa
+#### 3. Atualizar uma Tarefa
 Permite alterar o título, descrição ou status de uma tarefa existente.
 
-- **Endpoint:** `/tasks/{id}`
-- **Método:** `PUT`
+* **Endpoint:** `/tasks/{id}`
+* **Método:** `PUT`
 
-#### 📥 Requisição
+**Corpo da Requisição:**
+```json
+{
+  "taskTitle": "Estudar Spring Boot e DTOs",
+  "taskDescription": "Revisar a implementação de records",
+  "taskStatus": "COMPLETED"
+}
+```
+
+**Respostas:**
+* **`200 OK`** – Tarefa atualizada com sucesso.
+* **`403 Forbidden`** – A tarefa não pertence ao utilizador autenticado.
+* **`404 Not Found`** – Tarefa não encontrada.
+
+#### 4. Excluir uma Tarefa
+Remove uma tarefa existente do sistema. O utilizador apenas pode excluir as suas próprias tarefas.
+
+* **Endpoint:** `/tasks/{id}`
+* **Método:** `DELETE`
+
 **Parâmetros de Path:**
 | Parâmetro | Descrição |
 | :--- | :--- |
-| `id` | ID numérico da tarefa a ser atualizada |
+| `id` | ID numérico da tarefa a ser excluída |
 
-**Corpo da Requisição (UpdateTaskDTO):**
-```json
-{
-  "title": "Estudar Spring Boot e DTOs",
-  "description": "Revisar a implementação de records",
-  "status": "COMPLETED"
-}
-```
-#### 📤 Respostas
-- **`200 OK`** – Tarefa atualizada com sucesso.
-- **`403 Forbidden`** – A tarefa não pertence ao usuário autenticado.
-- **`404 Not Found`** – Tarefa não encontrada.
+**Respostas:**
+* **`200 OK`** (ou **`204 No Content`**) – Tarefa excluída com sucesso.
+* **`403 Forbidden`** – A tarefa não pertence ao utilizador autenticado.
+* **`404 Not Found`** – Tarefa não encontrada.
+
+---
+
+## 🎨 Páginas Web (Frontend)
+
+O projeto também serve páginas HTML renderizadas diretamente pelo Spring MVC (Thymeleaf). O controlo das views é feito pelo `LoginViewController`:
+
+* `GET /` - Página inicial de apresentação do Calm Tasks (Landing Page).
+* `GET /login` - Ecrã de autenticação do utilizador.
+* `GET /register` - Ecrã de criação de nova conta.
+* `GET /tasks-view` - Dashboard principal onde a lista de tarefas é exibida e gerida (Requer Autenticação).
+* `GET /profile` - Ecrã de visualização do perfil do utilizador e suas conquistas/estatísticas (Requer Autenticação).
 
 ---
 
 ## ⚠️ Tratamento de Erros
+
 A API utiliza um `RestExceptionHandler` para padronizar as respostas de erro por meio da classe `ApiError`.
 
-**Possíveis erros:**
-* **400 Bad Request** – Erros de validação nos campos do DTO.
-* **403 Forbidden** – Tentativa de acesso a um recurso que não pertence ao usuário.
-* **404 Not Found** – Recurso (Tarefa ou Usuário) não encontrado.
-* **409 Conflict** – Violação de restrição (ex: e-mail duplicado).
-
+**Padrão de resposta de Erro:**
+```json
+{
+  "timestamp": "22-02-2026 15:30:00",
+  "code": 400,
+  "status": "BAD_REQUEST",
+  "message": "Validation has failed for one or more fields",
+  "error": "taskTitle: Title is required"
+}
+ ```
 
 
 
